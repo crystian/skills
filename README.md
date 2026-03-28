@@ -16,7 +16,7 @@ Open collection of AI agent skills — reusable, framework-agnostic SKILL.md pac
 claude /plugin install crystian/skills
 ```
 
-Skills are namespaced: `/crystian-skills:skill-sharpen`
+Skills are namespaced: `/crystools-skills:skill-sharpen`
 
 ### Via skills.sh (any SKILL.md-compatible agent)
 
@@ -31,6 +31,16 @@ Install a specific skill:
 ```bash
 npx skills add crystian/skills --skill skill-sharpen
 ```
+
+## Contributing
+
+After cloning, run the setup script to configure git hooks:
+
+```bash
+./setup.sh
+```
+
+This sets `core.hooksPath` to `hooks/`, enabling the version bump prompt on every commit (patch / minor / major / skip).
 
 ## License
 
