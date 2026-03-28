@@ -2,9 +2,9 @@
 name: skill-sharpen
 author: Crystian
 license: MIT
-description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Two modes: default (analyze + propose, skip all to log), --review (process accumulated lessons)."
+description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Default analyzes and proposes, --review processes accumulated lessons."
 metadata:
-  version: 1.1.6
+  version: 1.1.7
   tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review, kaizen
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -21,52 +21,24 @@ Kaizen (改善) for AI agent skills. Observe how a skill performed, find what we
 - Tracks recurrence in LESSONS.md with automatic importance escalation
 - Works with Claude Code and any SKILL.md-based agent framework
 
-## Process
+## Execution
 
-### 1. Resolve Target Skill
+### 1. Resolve target
 
-Determine which skill to sharpen:
+- `/skill-sharpen` (no args) — auto-detect last used skill, confirm with user
+- `/skill-sharpen <name>` — search by name across skill directories
+- If no skill was used yet, wait for one to complete
 
-- **Explicit** (`/skill-sharpen <name>`): Search for `<name>` across skill directories —
-  local project skills, installed skills, and plugin skills. Match by directory name.
-- **Auto-detect** (`/skill-sharpen` with no args): Scan conversation history for the most
-  recently loaded skill (look for SKILL.md content or `/skill-name` invocations). Ask the
-  user to confirm: "Detected `<name>` — is that the one?"
-- **No skill used yet**: If no skill was executed in the conversation, wait for the user
-  to run one. Once completed, proceed automatically with the analysis.
+Once resolved, read the target's `SKILL.md` and `LESSONS.md` (if exists).
 
-If the skill is not found, list the paths searched and ask the user for a correction or
-an explicit path.
+### 2. Gather
 
-Once resolved, read the target skill's `SKILL.md` and `LESSONS.md` (if it exists). Keep
-both in context — they inform what to propose and what to skip.
+Collect findings from the appropriate source:
 
-### 2. Determine Mode
+- **Default** — three evidence sources + user feedback
+- **`--review`** — existing LESSONS.md entries + static diagnostic
 
-- **Default** (no flags) — analyze the conversation → show report → ask for additional
-  feedback → propose improvements one by one → user decides each. Use `(s)kip all` at
-  any proposal to send all remaining findings to LESSONS.md at once.
-- **`--review`** — skip conversation analysis → walk through existing LESSONS.md entries
-  one by one + run static diagnostic of the SKILL.md. Process accumulated lessons.
-
-**Accumulation workflow**: Run skill-sharpen after each session, `skip all` to log
-everything quickly. Findings accumulate in LESSONS.md with Hits tracking. When ready
-to process, run `--review`.
-
-```
-Session 1: /skill-sharpen → report → skip all     → findings logged to LESSONS.md
-Session 2: /skill-sharpen → report → skip all     → more findings, Hits grow
-Session 3: /skill-sharpen --review                 → process all accumulated lessons
-```
-
-### 3. Gather Evidence
-
-Collect information from three sources. Work with whatever is available — not all sources
-will have signal every time.
-
-**Source A — Conversation friction**
-
-Scan the conversation for friction signals:
+**Source A — Conversation friction**:
 - Errors or exceptions during skill execution
 - User corrections ("no, not that", "I meant...", "undo that")
 - Retries or repeated attempts at the same step
@@ -74,124 +46,16 @@ Scan the conversation for friction signals:
 - Confusion about what the skill was supposed to do
 - Steps the skill skipped or did in the wrong order
 
-**Source B — File diffs**
-
-Check `git diff` or recently modified files for:
+**Source B — File diffs**:
 - Files the skill created or modified — do they match what was expected?
 - Changes the user had to make after the skill ran (post-corrections)
 - Incomplete implementations (TODOs, placeholders, missing pieces)
 - Patterns that deviate from what the SKILL.md prescribed
 
-**Source C — User feedback**
+**Source C — User feedback**: After the initial report, ask:
+"Anything else? What worked? What didn't?"
 
-After showing the initial report, ask the user:
-> "Anything else? What worked well? What didn't?"
-
-This is especially valuable when conversation context is compressed or when the issues
-are subtle (preferences, style, approach). Keep it open-ended — one question, then follow
-up if needed.
-
-### 4. Analyze and Generate Proposals
-
-Cross-reference the evidence against the target skill's SKILL.md to identify:
-
-| Category | What to look for |
-|----------|-----------------|
-| **Missing instructions** | Steps the skill should have taken but didn't because the SKILL.md didn't mention them |
-| **Ambiguous instructions** | Places where the SKILL.md was vague and the skill made a wrong choice |
-| **Wrong defaults** | Default behaviors that consistently need overriding |
-| **Missing guardrails** | Errors that a "don't" rule would have prevented |
-| **Outdated content** | References to APIs, tools, or patterns that have changed |
-| **Missing examples** | Cases where an example would have prevented misinterpretation |
-| **Structural issues** | Ordering problems, missing sections, or buried important info |
-
-For each finding, **diagnose the root cause** in the SKILL.md. Don't just describe what
-went wrong — explain *why* it happened by tracing it back to a specific instruction,
-gap, or ambiguity. Use these diagnostic categories:
-
-| Diagnostic | What it means |
-|------------|--------------|
-| **Coherence** | Sections don't align — the process says one thing, the guardrails another |
-| **Coupling** | Content that doesn't belong in this skill — leaks from another domain, out-of-scope instructions, or mixed responsibilities that caused the agent to act outside its purpose |
-| **Ambiguity** | Instruction open to interpretation — "if needed", "as appropriate" without criteria |
-| **Contradiction** | Two rules directly conflict |
-| **Specificity gap** | No concrete rule exists for this case — the agent had to guess |
-| **Missing instruction** | The SKILL.md simply doesn't cover this scenario |
-| **Redundancy** | Same instruction repeated in different sections or worded differently — causes confusion about which one to follow, wastes context window |
-| **Error inducer** | A specific instruction actively promotes the wrong behavior |
-
-Each proposal must include a short **root cause** line. Format:
-
-```
-Finding: [what happened]
-Root cause: [diagnostic] — [which line/section caused it and why]
-Proposed change: [concrete fix]
-```
-
-**Assign importance based on impact:**
-
-| Importance | Criteria |
-|------------|----------|
-| **high** | Breaks output, causes errors, or requires user intervention every time |
-| **medium** | Suboptimal results, friction exists but workaround is possible |
-| **low** | Style, preferences, minor improvements |
-
-**Recurrence escalation:** Before generating a new proposal, check LESSONS.md for an
-existing entry describing the same pattern. If found, increment its `Hits` column instead
-of creating a duplicate. When hits reach 3+, escalate importance: `low` → `medium`,
-`medium` → `high`. `high` stays `high`.
-
-**Enrich with context7 (optional):** If the `context7` MCP server is available, query
-the latest Agent Skills specification and Anthropic skill authoring best practices to
-ensure diagnostic rules reflect the most current standards.
-
-### 5. Present Proposals (Default Mode)
-
-Present proposals **one at a time**, ordered by importance (high → medium → low).
-
-For each proposal, show:
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  PROPOSAL [N/total] — [importance]
-  Source: [conversation | diff | user]
-
-  Finding: [what was observed]
-  Root cause: [diagnostic] — [which line/section and why]
-  Hits: [N — omit if first occurrence]
-
-  Proposed change:
-  [concrete description of what to add/modify/remove in SKILL.md]
-
-  Preview:
-  [show the actual diff or new text that would be added]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (a)ccept  (p)ostpone  (r)eject  (d)on't  (s)kip all
-```
-
-Handle the user's decision:
-
-- **Accept**: Show the exact edit to be made. Apply it only after the user confirms.
-  Edit the target SKILL.md directly.
-- **Postpone**: Append to the target skill's LESSONS.md (create if it doesn't exist).
-- **Reject**: Discard and move to the next proposal.
-- **Don't**: The user is saying "this is wrong, the skill should NEVER do this". Confirm
-  the negative rule with the user, then add it to the SKILL.md as a "Do NOT..." instruction.
-- **Skip all**: Write remaining proposals to LESSONS.md and end.
-
-After all proposals are processed, show a summary:
-
-```
-Done. [N] accepted, [N] postponed, [N] rejected, [N] don'ts added.
-```
-
-### 6. Review Mode
-
-Walk through existing LESSONS.md entries one by one. For each entry, present it in the
-same format as Step 5 (but source and finding come from the LESSONS.md entry).
-
-Additionally, run a **static diagnostic** of the SKILL.md as part of the review. Validate
-against these baseline rules (from Agent Skills spec + Anthropic best practices):
+**Static diagnostic** (in `--review`): Validate against baseline rules:
 - Frontmatter must have `name` and `description` (required)
 - Description max 1024 characters, third person, with specific trigger phrases
 - Body should be under 500 lines — use `references/` for overflow
@@ -199,19 +63,79 @@ against these baseline rules (from Agent Skills spec + Anthropic best practices)
 - Progressive disclosure: metadata (~100 tokens) → body (<5k tokens) → resources (as needed)
 - Check for: dead content, scope creep, trigger quality, token efficiency, completeness
 
-Static findings are presented as proposals alongside the LESSONS.md entries.
+Cross-reference against the SKILL.md. Look for:
 
-The user can:
-- **Accept** → apply to SKILL.md, remove from LESSONS.md
-- **Reject** → remove from LESSONS.md (optionally convert to "don't")
-- **Keep** → leave in LESSONS.md for later
+| Category | What to look for |
+|----------|-----------------|
+| **Missing instructions** | Steps the skill should have taken but the SKILL.md didn't mention |
+| **Ambiguous instructions** | Places where the SKILL.md was vague and the skill chose wrong |
+| **Wrong defaults** | Default behaviors that consistently need overriding |
+| **Missing guardrails** | Errors that a "don't" rule would have prevented |
+| **Outdated content** | References to APIs, tools, or patterns that have changed |
+| **Missing examples** | Cases where an example would have prevented misinterpretation |
+| **Structural issues** | Ordering problems, missing sections, or buried important info |
 
-After processing all entries, show the summary. If all entries were processed (none kept),
-delete the LESSONS.md file.
+For each finding, diagnose the **root cause** — trace it back to a specific instruction,
+gap, or ambiguity:
+
+| Diagnostic | What it means |
+|------------|--------------|
+| **Coherence** | Sections don't align — process says one thing, guardrails another |
+| **Coupling** | Content that doesn't belong — out-of-scope, mixed responsibilities |
+| **Ambiguity** | Instruction open to interpretation without concrete criteria |
+| **Contradiction** | Two rules directly conflict |
+| **Specificity gap** | No rule for this case — the agent had to guess |
+| **Missing instruction** | The SKILL.md doesn't cover this scenario |
+| **Redundancy** | Same instruction repeated differently — confusion + wasted tokens |
+| **Error inducer** | A specific instruction promotes the wrong behavior |
+
+**Importance**: `high` (breaks output, errors) · `medium` (suboptimal, friction) · `low` (style, preferences)
+
+**Recurrence**: Same pattern in LESSONS.md? Increment `Hits` instead of duplicating.
+Hits >= 3 escalates: `low` → `medium`, `medium` → `high`.
+
+**context7 (optional)**: If available, query latest Agent Skills spec for current standards.
+
+### 3. Propose
+
+Present findings one at a time, ordered by importance:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PROPOSAL [N/total] — [importance]
+  Source: [conversation | diff | user | lessons]
+
+  Finding: [what was observed]
+  Root cause: [diagnostic] — [which line/section and why]
+  Hits: [N — omit if first occurrence]
+
+  Proposed change: [what to add/modify/remove]
+  Preview: [actual diff or new text]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (a)ccept  (p)ostpone  (r)eject  (d)on't  (s)kip all
+```
+
+- **Accept** → show edit, apply after confirmation
+- **Postpone** → save to LESSONS.md
+- **Reject** → discard (in review: remove from LESSONS.md)
+- **Keep** → leave in LESSONS.md for later (only in `--review`)
+- **Don't** → confirm, then add negative rule to SKILL.md
+- **Skip all** → write remaining to LESSONS.md, end
+
+Summary: `Done. [N] accepted, [N] postponed, [N] rejected, [N] don'ts.`
+
+**Accumulation**: use `skip all` to log everything quickly across sessions, then
+`--review` to process all at once.
+
+```
+Session 1: /skill-sharpen → skip all       → logged to LESSONS.md
+Session 2: /skill-sharpen → skip all       → Hits grow
+Session 3: /skill-sharpen --review         → process all
+```
 
 ## LESSONS.md Format
 
-The file lives alongside the target skill's SKILL.md. Format:
+Lives alongside the target's SKILL.md:
 
 ```markdown
 # Lessons — {skill-name}
@@ -220,52 +144,29 @@ The file lives alongside the target skill's SKILL.md. Format:
 - **Date**: 2026-03-28
 - **Source**: conversation
 - **Diagnostic**: ambiguity — line 45 says "if needed" without criteria
-- **Proposal**: Replace "if needed" with explicit condition: "when scope is api or both"
+- **Proposal**: Replace with explicit condition: "when scope is api or both"
 
 ### 2 — medium | Hits: 3
 - **Date**: 2026-03-27
 - **Source**: diff
 - **Diagnostic**: missing instruction
-- **Proposal**: Add validation step before Phase 3 for skill-scoped plans
+- **Proposal**: Add validation step before Phase 3
 ```
 
-**Fields:**
-- **Heading**: entry number + importance + hits count
-- **Date**: when first generated (YYYY-MM-DD), updated to latest occurrence on hit
-- **Source**: `conversation`, `diff`, or `user`
-- **Diagnostic**: root cause category + short explanation
-- **Proposal**: concise description of finding + proposed change
-
-**Rules:**
-- Never create an empty LESSONS.md — only create it when there's at least one entry
-- When the same pattern is detected again, increment `Hits` in the heading instead of
-  adding a duplicate. Update `Date` to the latest occurrence
-- When hits reach 3+, escalate importance: `low` → `medium`, `medium` → `high`
-- When accepting or rejecting an entry, remove the entire block
-- When all entries are removed, delete the file
+**Rules**: no empty files · same pattern → increment Hits · hits >= 3 → escalate importance · accept/reject → remove block · all removed → delete file
 
 ## Guardrails
 
-- **Never edit without confirmation.** Always show the proposed diff and wait for explicit
-  user approval before modifying any SKILL.md. This is non-negotiable — no exceptions,
-  not even in observe-only mode (which writes to LESSONS.md, never to SKILL.md).
-  Always ask the user what they want to do. The user owns the skill.
-- **Never expose secrets.** When analyzing conversation history, diffs, or files, redact
-  any sensitive content before displaying it in proposals, previews, or LESSONS.md entries.
-  This includes: API keys, tokens, passwords, connection strings, private URLs, and any
-  value that looks like a credential (e.g., `sk-...`, `ghp_...`, `Bearer ...`). Replace
-  with `[REDACTED]` in all output. Never write secrets to LESSONS.md.
-- **Read before proposing.** Always read the target SKILL.md and LESSONS.md before
-  generating proposals. Avoids duplicates, contradictions, and already-addressed issues.
-- **Work with partial context.** If the conversation was long and context is compressed,
-  work with what's available. State what you can see and what might be missing. Never
-  invent evidence or assume what happened.
-- **One proposal at a time.** Don't dump all proposals at once. Present, decide, move on.
-- **Respect the SKILL.md structure.** When inserting new content, match the existing style,
-  indentation, and organizational pattern of the target SKILL.md.
-- **Don'ts need double confirmation.** Adding a negative rule to a SKILL.md is impactful.
-  Always confirm: "Add this as a 'don't' rule to the SKILL.md?"
+- **Never edit without confirmation.** Show the diff, wait for explicit approval. No
+  exceptions. The user owns the skill.
+- **Never expose secrets.** Redact API keys, tokens, passwords, credentials (`sk-...`,
+  `ghp_...`, `Bearer ...`) with `[REDACTED]` in all output and LESSONS.md.
+- **Read before proposing.** Read SKILL.md + LESSONS.md first to avoid duplicates.
+- **Work with partial context.** If compressed, state what's missing. Never invent.
+- **One at a time.** Present, decide, move on.
+- **Respect structure.** Match existing style when inserting content.
+- **Don'ts need double confirmation.** Negative rules are impactful — always confirm.
 
 ---
 
-Made by [Crystian](https://github.com/crystian)
+Made with love by [Crystian](https://github.com/crystian)
