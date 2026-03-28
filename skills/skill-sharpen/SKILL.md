@@ -4,7 +4,7 @@ author: Crystian
 license: MIT
 description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Three modes: interactive (propose one by one), observe-only (dump to LESSONS.md), review (process pending lessons)."
 metadata:
-  version: 1.1.2
+  version: 1.1.3
   tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review, kaizen
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -240,6 +240,11 @@ The file lives alongside the target skill's SKILL.md. Format:
   user approval before modifying any SKILL.md. This is non-negotiable — no exceptions,
   not even in observe-only mode (which writes to LESSONS.md, never to SKILL.md).
   Always ask the user what they want to do. The user owns the skill.
+- **Never expose secrets.** When analyzing conversation history, diffs, or files, redact
+  any sensitive content before displaying it in proposals, previews, or LESSONS.md entries.
+  This includes: API keys, tokens, passwords, connection strings, private URLs, and any
+  value that looks like a credential (e.g., `sk-...`, `ghp_...`, `Bearer ...`). Replace
+  with `[REDACTED]` in all output. Never write secrets to LESSONS.md.
 - **Read before proposing.** Always read the target SKILL.md and LESSONS.md before
   generating proposals. Avoids duplicates, contradictions, and already-addressed issues.
 - **Work with partial context.** If the conversation was long and context is compressed,
