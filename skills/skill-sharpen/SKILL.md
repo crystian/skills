@@ -1,8 +1,11 @@
 ---
 name: skill-sharpen
 author: Crystian
+license: MIT
 description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Three modes: interactive (propose one by one), observe-only (dump to LESSONS.md), review (process pending lessons)."
 metadata:
+  version: 1.0.3
+  tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
 ---

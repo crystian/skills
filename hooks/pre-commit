@@ -32,5 +32,13 @@ esac
 sed -i "s/\"version\": \"$CURRENT\"/\"version\": \"$NEW\"/" "$PLUGIN_JSON"
 git add "$PLUGIN_JSON"
 
+# Bump version in all SKILL.md metadata
+for SKILL in skills/*/SKILL.md; do
+  if [ -f "$SKILL" ] && grep -q "version: $CURRENT" "$SKILL"; then
+    sed -i "s/version: $CURRENT/version: $NEW/" "$SKILL"
+    git add "$SKILL"
+  fi
+done
+
 echo "  Bumped: $CURRENT → $NEW"
 echo ""
