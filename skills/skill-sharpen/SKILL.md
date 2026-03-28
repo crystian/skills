@@ -4,7 +4,7 @@ author: Crystian
 license: MIT
 description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Three modes: interactive (propose one by one), observe-only (dump to LESSONS.md), review (process pending lessons)."
 metadata:
-  version: 1.0.4
+  version: 1.1.0
   tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review, kaizen
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -12,9 +12,14 @@ metadata:
 
 # Skill Sharpen
 
-Kaizen (改善) for AI agent skills — observe how a skill performed, find what went wrong or
-could be better, and propose concrete changes to its SKILL.md. Feed from conversation
-history, file diffs, and explicit user feedback.
+> Born from real-world production usage across multiple projects. Every diagnostic category, every proposal flow, and every guardrail exists because it solved a real problem in a real skill.
+
+Kaizen (改善) for AI agent skills. Observe how a skill performed, find what went wrong or could be better, and propose concrete changes to its SKILL.md.
+
+- Analyzes three sources: conversation history, file diffs, and user feedback
+- Proposes improvements one by one with accept/postpone/reject flow
+- Tracks recurrence in LESSONS.md with automatic importance escalation
+- Works with Claude Code and any SKILL.md-based agent framework
 
 ## Process
 
@@ -40,9 +45,10 @@ Ask the user or detect from arguments:
 
 | Mode | Trigger | Behavior |
 |------|---------|----------|
-| **Interactive** | Default (no flag) | Analyze sources → propose one by one → user decides each |
-| **Observe-only** | `--observe` or user says "just log" | Analyze sources → write all to LESSONS.md → done |
+| **Interactive** | Default (no flag) | Analyze sources → diagnose root cause → propose one by one → user decides each |
+| **Observe-only** | `--observe` or user says "just log" | Analyze sources → diagnose → write all to LESSONS.md → done |
 | **Review** | `--review` or user says "review lessons" | Skip source analysis → walk through existing LESSONS.md entries |
+| **Audit** | `--audit` or user says "audit the skill" | Skip sources → full static diagnostic of the SKILL.md → propose fixes |
 
 If mode is **Review**, jump directly to [Step 6: Review Mode](#6-review-mode).
 
@@ -92,6 +98,43 @@ Cross-reference the evidence against the target skill's SKILL.md to identify:
 | **Missing examples** | Cases where an example would have prevented misinterpretation |
 | **Structural issues** | Ordering problems, missing sections, or buried important info |
 
+For each finding, **diagnose the root cause** in the SKILL.md. Don't just describe what
+went wrong — explain *why* it happened by tracing it back to a specific instruction,
+gap, or ambiguity. Use these diagnostic categories:
+
+| Diagnostic | What it means |
+|------------|--------------|
+| **Coherence** | Sections don't align — the process says one thing, the guardrails another |
+| **Coupling** | Content that doesn't belong in this skill — leaks from another domain, out-of-scope instructions, or mixed responsibilities that caused the agent to act outside its purpose. If it's not cohesive with the skill's core goal, it shouldn't be there |
+| **Ambiguity** | Instruction open to interpretation — "if needed", "as appropriate" without criteria |
+| **Contradiction** | Two rules directly conflict |
+| **Specificity gap** | No concrete rule exists for this case — the agent had to guess |
+| **Missing instruction** | The SKILL.md simply doesn't cover this scenario |
+| **Error inducer** | A specific instruction actively promotes the wrong behavior |
+
+Each proposal must include a short **root cause** line. Format:
+
+```
+Finding: [what happened]
+Root cause: [diagnostic] — [which line/section caused it and why]
+Proposed change: [concrete fix]
+```
+
+**`--audit` mode:** When invoked with `--audit`, run a full static diagnostic of the
+SKILL.md without requiring execution evidence. Validate against these baseline rules
+(from Agent Skills spec + Anthropic best practices):
+- Frontmatter must have `name` and `description` (required)
+- Description max 1024 characters, third person, with specific trigger phrases
+- Body should be under 500 lines — use `references/` for overflow
+- Name: lowercase, hyphens only, 1-64 characters
+- Progressive disclosure: metadata (~100 tokens) → body (<5k tokens) → resources (as needed)
+- Check for: dead content, scope creep, trigger quality, token efficiency, completeness
+
+**Enrich with context7 (optional):** If the `context7` MCP server is available, query
+the latest Agent Skills specification and Anthropic skill authoring best practices to
+ensure rules reflect the most current standards. If not available, use the baseline
+rules above — they cover the stable core.
+
 For each finding, formulate a **proposal**: a concrete, actionable change to the SKILL.md.
 
 **Assign importance based on impact:**
@@ -119,6 +162,7 @@ For each proposal, show:
   Source: [conversation | diff | user]
 
   Finding: [what was observed]
+  Root cause: [diagnostic] — [which line/section and why]
   Hits: [N — omit if first occurrence]
 
   Proposed change:
@@ -166,16 +210,17 @@ The file lives alongside the target skill's SKILL.md. Format:
 ```markdown
 # Lessons — {skill-name}
 
-| Date | Source | Proposal | Importance | Hits |
-|------|--------|----------|------------|------|
-| 2026-03-28 | conversation | Description of finding and proposed change | high | 1 |
-| 2026-03-27 | diff | Another pending proposal | medium | 3 |
+| Date | Source | Proposal | Diagnostic | Importance | Hits |
+|------|--------|----------|------------|------------|------|
+| 2026-03-28 | conversation | Description of finding and proposed change | ambiguity — line 45 "if needed" | high | 1 |
+| 2026-03-27 | diff | Another pending proposal | missing instruction | medium | 3 |
 ```
 
 **Columns:**
 - **Date**: when the proposal was first generated (YYYY-MM-DD)
 - **Source**: `conversation`, `diff`, or `user`
 - **Proposal**: concise description of finding + proposed change
+- **Diagnostic**: root cause category + short explanation (e.g., `ambiguity — line 45`)
 - **Importance**: `high`, `medium`, `low` (see criteria in Step 4)
 - **Hits**: how many times this pattern has been observed (starts at 1)
 
@@ -191,7 +236,9 @@ The file lives alongside the target skill's SKILL.md. Format:
 ## Guardrails
 
 - **Never edit without confirmation.** Always show the proposed diff and wait for explicit
-  user approval before modifying any SKILL.md. This is non-negotiable.
+  user approval before modifying any SKILL.md. This is non-negotiable — no exceptions,
+  not even in observe-only mode (which writes to LESSONS.md, never to SKILL.md).
+  Always ask the user what they want to do. The user owns the skill.
 - **Read before proposing.** Always read the target SKILL.md and LESSONS.md before
   generating proposals. Avoids duplicates, contradictions, and already-addressed issues.
 - **Work with partial context.** If the conversation was long and context is compressed,
