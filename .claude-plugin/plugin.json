@@ -1,0 +1,8 @@
+{
+  "name": "crystian-skills",
+  "description": "Open collection of AI agent skills — reusable, framework-agnostic SKILL.md packages",
+  "version": "1.0.0",
+  "author": {
+    "name": "Crystian"
+  }
+}
