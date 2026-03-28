@@ -4,7 +4,7 @@ author: Crystian
 license: MIT
 description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Three modes: interactive (propose one by one), observe-only (dump to LESSONS.md), review (process pending lessons)."
 metadata:
-  version: 1.1.3
+  version: 1.1.4
   tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review, kaizen
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -16,8 +16,8 @@ metadata:
 
 Kaizen (改善) for AI agent skills. Observe how a skill performed, find what went wrong or could be better, and propose concrete changes to its SKILL.md.
 
-- Analyzes three sources: conversation history, file diffs, and user feedback
-- Proposes improvements one by one with accept/postpone/reject flow
+- Gathers evidence from three sources: conversation friction, file diffs, and your feedback
+- Diagnoses root causes and proposes improvements — you decide each one
 - Tracks recurrence in LESSONS.md with automatic importance escalation
 - Works with Claude Code and any SKILL.md-based agent framework
 
@@ -47,10 +47,28 @@ Ask the user or detect from arguments:
 |------|---------|----------|
 | **Interactive** | Default (no flag) | Analyze sources → diagnose root cause → propose one by one → user decides each |
 | **Observe-only** | `--observe` or user says "just log" | Analyze sources → diagnose → write all to LESSONS.md → done |
+| **Watch** | `--watch <skill>` or user says "run X and observe" | Execute the target skill first, then analyze the results (interactive or with `--observe`) |
 | **Review** | `--review` or user says "review lessons" | Skip source analysis → walk through existing LESSONS.md entries |
 | **Audit** | `--audit` or user says "audit the skill" | Skip sources → full static diagnostic of the SKILL.md → propose fixes |
 
 If mode is **Review**, jump directly to [Step 6: Review Mode](#6-review-mode).
+
+**Watch mode**: Invoke the target skill (e.g., `/create-plan`) and wait for it to complete.
+Then automatically enter interactive mode (or observe-only if combined: `--watch --observe`).
+Also detect natural language: "ejecutá /create-plan y después observemos" triggers watch +
+interactive. The skill being watched becomes the target for analysis — no need to specify
+it again.
+
+**Accumulation workflow**: Use `--observe` (or `--watch --observe`) repeatedly across
+sessions to accumulate lessons in LESSONS.md. Each run adds new findings or increments
+Hits on existing ones. When ready to process, run `--review` to walk through everything
+and decide what to apply.
+
+```
+Session 1: /skill-sharpen --watch create-plan --observe  → runs skill, logs findings
+Session 2: /skill-sharpen --observe                      → logs more findings, Hits grow
+Session 3: /skill-sharpen --review                       → process all accumulated lessons
+```
 
 ### 3. Gather Evidence
 

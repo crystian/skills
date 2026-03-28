@@ -57,11 +57,12 @@ Kaizen (改善) for AI agent skills — observe how a skill performed, find what
 # ... work as usual ...
 ```
 
-**2. Sharpen it**
+**2. Sharpen it** (pick one)
 
 ```
-/skill-sharpen create-plan          # target a specific skill
-/skill-sharpen                      # auto-detect last used skill
+/skill-sharpen create-plan                      # analyze after using a skill
+/skill-sharpen --watch create-plan              # run the skill + analyze in one step
+/skill-sharpen --watch create-plan --observe    # run + log findings for later
 ```
 
 **3. Decide on each proposal**
@@ -88,9 +89,20 @@ Proposed change: Add validation rule to SKILL.md section...
 | Mode | Command | When to use |
 |------|---------|-------------|
 | **Interactive** | `/skill-sharpen [name]` | Default — proposes one by one, you decide each |
-| **Observe-only** | `/skill-sharpen --observe` | In a hurry — dumps all proposals to LESSONS.md |
-| **Review** | `/skill-sharpen --review` | Got 5 min — walks through pending LESSONS.md entries |
+| **Watch** | `/skill-sharpen --watch <skill>` | Run a skill + analyze in one step |
+| **Observe-only** | `/skill-sharpen --observe` | In a hurry — logs all findings to LESSONS.md |
+| **Review** | `/skill-sharpen --review` | Process accumulated lessons from LESSONS.md |
 | **Audit** | `/skill-sharpen --audit` | Full static diagnostic of the SKILL.md |
+
+### Accumulation Workflow
+
+Log findings across sessions, review when ready:
+
+```
+Session 1: /skill-sharpen --watch create-plan --observe   → run + log
+Session 2: /skill-sharpen --observe                       → log more, Hits grow
+Session 3: /skill-sharpen --review                        → process all at once
+```
 
 ### Diagnostic Categories
 
