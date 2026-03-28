@@ -57,13 +57,14 @@ Kaizen (改善) for AI agent skills — observe how a skill performed, find what
 # ... work as usual ...
 ```
 
-**2. Sharpen it** (pick one)
+**2. Sharpen it**
 
 ```
-/skill-sharpen create-plan                      # analyze after using a skill
-/skill-sharpen --watch create-plan              # run the skill + analyze in one step
-/skill-sharpen --watch create-plan --observe    # run + log findings for later
+/skill-sharpen create-plan          # analyze a specific skill
+/skill-sharpen                      # auto-detect last used skill
 ```
+
+If no skill was used yet, it waits for one to complete and then analyzes automatically.
 
 **3. Decide on each proposal**
 
@@ -86,22 +87,33 @@ Proposed change: Add validation rule to SKILL.md section...
 
 ### Modes
 
-| Mode | Command | When to use |
-|------|---------|-------------|
-| **Interactive** | `/skill-sharpen [name]` | Default — proposes one by one, you decide each |
-| **Watch** | `/skill-sharpen --watch <skill>` | Run a skill + analyze in one step |
-| **Observe-only** | `/skill-sharpen --observe` | Logs all findings to LESSONS.md |
-| **Review** | `/skill-sharpen --review` | Process accumulated lessons from LESSONS.md |
-| **Audit** | `/skill-sharpen --audit` | Full static diagnostic of the SKILL.md |
+- **Default** (`/skill-sharpen [name]`) — analyze → report → ask for feedback → propose one by one. Use `skip all` to log everything to LESSONS.md at once.
+- **Review** (`/skill-sharpen --review`) — process accumulated lessons + static diagnostic
 
 ### Accumulation Workflow
 
 Log findings across sessions, review when ready:
 
 ```
-Session 1: /skill-sharpen --watch create-plan --observe   → run + log
-Session 2: /skill-sharpen --observe                       → log more, Hits grow
-Session 3: /skill-sharpen --review                        → process all at once
+Session 1: /skill-sharpen → report → skip all     → findings logged to LESSONS.md
+Session 2: /skill-sharpen → report → skip all     → more findings, Hits grow
+Session 3: /skill-sharpen --review                 → process all at once
+```
+
+Lessons are stored in a `LESSONS.md` file next to the target skill:
+
+```markdown
+### 1 — high | Hits: 1
+- **Date**: 2026-03-28
+- **Source**: conversation
+- **Diagnostic**: ambiguity — line 45 says "if needed" without criteria
+- **Proposal**: Replace with explicit condition: "when scope is api or both"
+
+### 2 — medium | Hits: 3
+- **Date**: 2026-03-27
+- **Source**: diff
+- **Diagnostic**: missing instruction
+- **Proposal**: Add validation step before Phase 3
 ```
 
 ### Diagnostic Categories

@@ -2,9 +2,9 @@
 name: skill-sharpen
 author: Crystian
 license: MIT
-description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Three modes: interactive (propose one by one), observe-only (dump to LESSONS.md), review (process pending lessons)."
+description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Two modes: default (analyze + propose, skip all to log), --review (process accumulated lessons)."
 metadata:
-  version: 1.1.5
+  version: 1.1.6
   tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review, kaizen
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -32,6 +32,8 @@ Determine which skill to sharpen:
 - **Auto-detect** (`/skill-sharpen` with no args): Scan conversation history for the most
   recently loaded skill (look for SKILL.md content or `/skill-name` invocations). Ask the
   user to confirm: "Detected `<name>` — is that the one?"
+- **No skill used yet**: If no skill was executed in the conversation, wait for the user
+  to run one. Once completed, proceed automatically with the analysis.
 
 If the skill is not found, list the paths searched and ask the user for a correction or
 an explicit path.
@@ -39,32 +41,22 @@ an explicit path.
 Once resolved, read the target skill's `SKILL.md` and `LESSONS.md` (if it exists). Keep
 both in context — they inform what to propose and what to skip.
 
-### 2. Determine Execution Mode
+### 2. Determine Mode
 
-Ask the user or detect from arguments:
+- **Default** (no flags) — analyze the conversation → show report → ask for additional
+  feedback → propose improvements one by one → user decides each. Use `(s)kip all` at
+  any proposal to send all remaining findings to LESSONS.md at once.
+- **`--review`** — skip conversation analysis → walk through existing LESSONS.md entries
+  one by one + run static diagnostic of the SKILL.md. Process accumulated lessons.
 
-| Mode | Trigger | Behavior |
-|------|---------|----------|
-| **Interactive** | Default (no flag) | Analyze sources → diagnose root cause → propose one by one → user decides each |
-| **Observe-only** | `--observe` or "just log" | Analyze sources → diagnose → write all to LESSONS.md → done |
-| **Watch** | `--watch <skill>` or "run X and observe" | Execute the target skill first, then analyze the results (interactive or with `--observe`) |
-| **Review** | `--review` or "review lessons" | Skip source analysis → walk through existing LESSONS.md entries |
-| **Audit** | `--audit` or "audit the skill" | Skip sources → full static diagnostic of the SKILL.md → propose fixes |
-
-If mode is **Review**, jump directly to [Step 6: Review Mode](#6-review-mode).
-
-**Watch mode**: Also detects natural language: "ejecutá /create-plan y después observemos"
-triggers watch + interactive. The skill being watched becomes the target for analysis.
-
-**Accumulation workflow**: Use `--observe` (or `--watch --observe`) repeatedly across
-sessions to accumulate lessons in LESSONS.md. Each run adds new findings or increments
-Hits on existing ones. When ready to process, run `--review` to walk through everything
-and decide what to apply.
+**Accumulation workflow**: Run skill-sharpen after each session, `skip all` to log
+everything quickly. Findings accumulate in LESSONS.md with Hits tracking. When ready
+to process, run `--review`.
 
 ```
-Session 1: /skill-sharpen --watch create-plan --observe  → runs skill, logs findings
-Session 2: /skill-sharpen --observe                      → logs more findings, Hits grow
-Session 3: /skill-sharpen --review                       → process all accumulated lessons
+Session 1: /skill-sharpen → report → skip all     → findings logged to LESSONS.md
+Session 2: /skill-sharpen → report → skip all     → more findings, Hits grow
+Session 3: /skill-sharpen --review                 → process all accumulated lessons
 ```
 
 ### 3. Gather Evidence
@@ -72,7 +64,7 @@ Session 3: /skill-sharpen --review                       → process all accumul
 Collect information from three sources. Work with whatever is available — not all sources
 will have signal every time.
 
-**Source A — Conversation history**
+**Source A — Conversation friction**
 
 Scan the conversation for friction signals:
 - Errors or exceptions during skill execution
@@ -92,8 +84,8 @@ Check `git diff` or recently modified files for:
 
 **Source C — User feedback**
 
-Ask the user directly:
-> "What worked well? What didn't? Anything specific you want the skill to do differently?"
+After showing the initial report, ask the user:
+> "Anything else? What worked well? What didn't?"
 
 This is especially valuable when conversation context is compressed or when the issues
 are subtle (preferences, style, approach). Keep it open-ended — one question, then follow
@@ -120,7 +112,7 @@ gap, or ambiguity. Use these diagnostic categories:
 | Diagnostic | What it means |
 |------------|--------------|
 | **Coherence** | Sections don't align — the process says one thing, the guardrails another |
-| **Coupling** | Content that doesn't belong in this skill — leaks from another domain, out-of-scope instructions, or mixed responsibilities that caused the agent to act outside its purpose. If it's not cohesive with the skill's core goal, it shouldn't be there |
+| **Coupling** | Content that doesn't belong in this skill — leaks from another domain, out-of-scope instructions, or mixed responsibilities that caused the agent to act outside its purpose |
 | **Ambiguity** | Instruction open to interpretation — "if needed", "as appropriate" without criteria |
 | **Contradiction** | Two rules directly conflict |
 | **Specificity gap** | No concrete rule exists for this case — the agent had to guess |
@@ -136,23 +128,6 @@ Root cause: [diagnostic] — [which line/section caused it and why]
 Proposed change: [concrete fix]
 ```
 
-**`--audit` mode:** When invoked with `--audit`, run a full static diagnostic of the
-SKILL.md without requiring execution evidence. Validate against these baseline rules
-(from Agent Skills spec + Anthropic best practices):
-- Frontmatter must have `name` and `description` (required)
-- Description max 1024 characters, third person, with specific trigger phrases
-- Body should be under 500 lines — use `references/` for overflow
-- Name: lowercase, hyphens only, 1-64 characters
-- Progressive disclosure: metadata (~100 tokens) → body (<5k tokens) → resources (as needed)
-- Check for: dead content, scope creep, trigger quality, token efficiency, completeness
-
-**Enrich with context7 (optional):** If the `context7` MCP server is available, query
-the latest Agent Skills specification and Anthropic skill authoring best practices to
-ensure rules reflect the most current standards. If not available, use the baseline
-rules above — they cover the stable core.
-
-For each finding, formulate a **proposal**: a concrete, actionable change to the SKILL.md.
-
 **Assign importance based on impact:**
 
 | Importance | Criteria |
@@ -166,7 +141,11 @@ existing entry describing the same pattern. If found, increment its `Hits` colum
 of creating a duplicate. When hits reach 3+, escalate importance: `low` → `medium`,
 `medium` → `high`. `high` stays `high`.
 
-### 5. Present Proposals (Interactive Mode)
+**Enrich with context7 (optional):** If the `context7` MCP server is available, query
+the latest Agent Skills specification and Anthropic skill authoring best practices to
+ensure diagnostic rules reflect the most current standards.
+
+### 5. Present Proposals (Default Mode)
 
 Present proposals **one at a time**, ordered by importance (high → medium → low).
 
@@ -209,7 +188,18 @@ Done. [N] accepted, [N] postponed, [N] rejected, [N] don'ts added.
 ### 6. Review Mode
 
 Walk through existing LESSONS.md entries one by one. For each entry, present it in the
-same format as Step 5 (but source and finding come from the LESSONS.md row).
+same format as Step 5 (but source and finding come from the LESSONS.md entry).
+
+Additionally, run a **static diagnostic** of the SKILL.md as part of the review. Validate
+against these baseline rules (from Agent Skills spec + Anthropic best practices):
+- Frontmatter must have `name` and `description` (required)
+- Description max 1024 characters, third person, with specific trigger phrases
+- Body should be under 500 lines — use `references/` for overflow
+- Name: lowercase, hyphens only, 1-64 characters
+- Progressive disclosure: metadata (~100 tokens) → body (<5k tokens) → resources (as needed)
+- Check for: dead content, scope creep, trigger quality, token efficiency, completeness
+
+Static findings are presented as proposals alongside the LESSONS.md entries.
 
 The user can:
 - **Accept** → apply to SKILL.md, remove from LESSONS.md
