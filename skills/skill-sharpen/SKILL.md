@@ -4,7 +4,7 @@ author: Crystian
 license: MIT
 description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Three modes: interactive (propose one by one), observe-only (dump to LESSONS.md), review (process pending lessons)."
 metadata:
-  version: 1.1.4
+  version: 1.1.5
   tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review, kaizen
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -46,18 +46,15 @@ Ask the user or detect from arguments:
 | Mode | Trigger | Behavior |
 |------|---------|----------|
 | **Interactive** | Default (no flag) | Analyze sources → diagnose root cause → propose one by one → user decides each |
-| **Observe-only** | `--observe` or user says "just log" | Analyze sources → diagnose → write all to LESSONS.md → done |
-| **Watch** | `--watch <skill>` or user says "run X and observe" | Execute the target skill first, then analyze the results (interactive or with `--observe`) |
-| **Review** | `--review` or user says "review lessons" | Skip source analysis → walk through existing LESSONS.md entries |
-| **Audit** | `--audit` or user says "audit the skill" | Skip sources → full static diagnostic of the SKILL.md → propose fixes |
+| **Observe-only** | `--observe` or "just log" | Analyze sources → diagnose → write all to LESSONS.md → done |
+| **Watch** | `--watch <skill>` or "run X and observe" | Execute the target skill first, then analyze the results (interactive or with `--observe`) |
+| **Review** | `--review` or "review lessons" | Skip source analysis → walk through existing LESSONS.md entries |
+| **Audit** | `--audit` or "audit the skill" | Skip sources → full static diagnostic of the SKILL.md → propose fixes |
 
 If mode is **Review**, jump directly to [Step 6: Review Mode](#6-review-mode).
 
-**Watch mode**: Invoke the target skill (e.g., `/create-plan`) and wait for it to complete.
-Then automatically enter interactive mode (or observe-only if combined: `--watch --observe`).
-Also detect natural language: "ejecutá /create-plan y después observemos" triggers watch +
-interactive. The skill being watched becomes the target for analysis — no need to specify
-it again.
+**Watch mode**: Also detects natural language: "ejecutá /create-plan y después observemos"
+triggers watch + interactive. The skill being watched becomes the target for analysis.
 
 **Accumulation workflow**: Use `--observe` (or `--watch --observe`) repeatedly across
 sessions to accumulate lessons in LESSONS.md. Each run adds new findings or increments
@@ -229,28 +226,33 @@ The file lives alongside the target skill's SKILL.md. Format:
 ```markdown
 # Lessons — {skill-name}
 
-| Date | Source | Proposal | Diagnostic | Importance | Hits |
-|------|--------|----------|------------|------------|------|
-| 2026-03-28 | conversation | Description of finding and proposed change | ambiguity — line 45 "if needed" | high | 1 |
-| 2026-03-27 | diff | Another pending proposal | missing instruction | medium | 3 |
+### 1 — high | Hits: 1
+- **Date**: 2026-03-28
+- **Source**: conversation
+- **Diagnostic**: ambiguity — line 45 says "if needed" without criteria
+- **Proposal**: Replace "if needed" with explicit condition: "when scope is api or both"
+
+### 2 — medium | Hits: 3
+- **Date**: 2026-03-27
+- **Source**: diff
+- **Diagnostic**: missing instruction
+- **Proposal**: Add validation step before Phase 3 for skill-scoped plans
 ```
 
-**Columns:**
-- **Date**: when the proposal was first generated (YYYY-MM-DD)
+**Fields:**
+- **Heading**: entry number + importance + hits count
+- **Date**: when first generated (YYYY-MM-DD), updated to latest occurrence on hit
 - **Source**: `conversation`, `diff`, or `user`
+- **Diagnostic**: root cause category + short explanation
 - **Proposal**: concise description of finding + proposed change
-- **Diagnostic**: root cause category + short explanation (e.g., `ambiguity — line 45`)
-- **Importance**: `high`, `medium`, `low` (see criteria in Step 4)
-- **Hits**: how many times this pattern has been observed (starts at 1)
 
 **Rules:**
 - Never create an empty LESSONS.md — only create it when there's at least one entry
-- When appending to an existing LESSONS.md, add new rows at the end of the table
-- When the same pattern is detected again, increment `Hits` instead of adding a duplicate.
-  Update `Date` to the latest occurrence
+- When the same pattern is detected again, increment `Hits` in the heading instead of
+  adding a duplicate. Update `Date` to the latest occurrence
 - When hits reach 3+, escalate importance: `low` → `medium`, `medium` → `high`
-- When accepting or rejecting an entry, remove its row from the table
-- When all rows are removed, delete the file
+- When accepting or rejecting an entry, remove the entire block
+- When all entries are removed, delete the file
 
 ## Guardrails
 

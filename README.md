@@ -90,7 +90,7 @@ Proposed change: Add validation rule to SKILL.md section...
 |------|---------|-------------|
 | **Interactive** | `/skill-sharpen [name]` | Default — proposes one by one, you decide each |
 | **Watch** | `/skill-sharpen --watch <skill>` | Run a skill + analyze in one step |
-| **Observe-only** | `/skill-sharpen --observe` | In a hurry — logs all findings to LESSONS.md |
+| **Observe-only** | `/skill-sharpen --observe` | Logs all findings to LESSONS.md |
 | **Review** | `/skill-sharpen --review` | Process accumulated lessons from LESSONS.md |
 | **Audit** | `/skill-sharpen --audit` | Full static diagnostic of the SKILL.md |
 
