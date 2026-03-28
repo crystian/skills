@@ -2,37 +2,68 @@
 
 Open collection of AI agent skills — reusable, framework-agnostic SKILL.md packages for Claude Code and beyond.
 
-## Quick Start
+## Available Skills
 
-### 1. Install
+| Skill | Description |
+|-------|-------------|
+| [skill-sharpen](./skills/skill-sharpen/) | Kaizen for AI agent skills — observes execution, analyzes friction points, and proposes concrete improvements to SKILL.md files |
+
+## Install
+
+### Via skills.sh (any SKILL.md-compatible agent)
+
+Install all skills:
 
 ```bash
 npx skills add crystian/skills
 ```
 
-### 2. Use any skill normally
+Install a specific skill:
 
 ```bash
+npx skills add crystian/skills --skill skill-sharpen
+```
+
+### As Claude Code plugin
+
+```bash
+claude /plugin install crystian/skills
+```
+
+Skills are namespaced: `/crystools-skills:<skill-name>`
+
+---
+
+## skill-sharpen
+
+> Born from real-world production usage across multiple projects. Every diagnostic category, every proposal flow, and every guardrail exists because it solved a real problem in a real skill.
+
+Kaizen (改善) for AI agent skills — observe how a skill performed, find what went wrong or could be better, and propose concrete changes to its SKILL.md.
+
+### Quick Start
+
+**1. Use any skill normally**
+
+```
 /create-plan
 # ... work as usual ...
 ```
 
-### 3. Sharpen it
+**2. Sharpen it**
 
-After running a skill, analyze what worked and what didn't:
-
-```bash
+```
 /skill-sharpen create-plan          # target a specific skill
 /skill-sharpen                      # auto-detect last used skill
 ```
 
-The skill analyzes the conversation, diffs, and your feedback, then proposes improvements one by one:
+**3. Decide on each proposal**
 
 ```
 PROPOSAL 1/3 — high
 Source: conversation
 
 Finding: The skill skipped validation step when...
+Root cause: specificity gap — no rule for this case
 
 Proposed change: Add validation rule to SKILL.md section...
 
@@ -51,34 +82,26 @@ Proposed change: Add validation rule to SKILL.md section...
 | **Interactive** | `/skill-sharpen [name]` | Default — proposes one by one, you decide each |
 | **Observe-only** | `/skill-sharpen --observe` | In a hurry — dumps all proposals to LESSONS.md |
 | **Review** | `/skill-sharpen --review` | Got 5 min — walks through pending LESSONS.md entries |
+| **Audit** | `/skill-sharpen --audit` | Full static diagnostic of the SKILL.md |
 
-## Available Skills
+### Diagnostic Categories
 
-| Skill | Description |
-|-------|-------------|
-| [skill-sharpen](./skills/skill-sharpen/) | Kaizen for AI agent skills — observes execution, analyzes friction points, and proposes concrete improvements to SKILL.md files |
+Each proposal traces the problem back to a root cause:
 
-## Install
+| Diagnostic | What it means |
+|------------|--------------|
+| **Coherence** | Sections don't align with each other |
+| **Coupling** | Content that doesn't belong — out-of-scope, mixed responsibilities |
+| **Ambiguity** | Instruction open to multiple interpretations |
+| **Contradiction** | Two rules directly conflict |
+| **Specificity gap** | No concrete rule — the agent had to guess |
+| **Redundancy** | Same instruction repeated or worded differently across sections |
+| **Missing instruction** | The SKILL.md doesn't cover this scenario |
+| **Error inducer** | A specific instruction promotes the wrong behavior |
 
-### Via skills.sh (any SKILL.md-compatible agent)
+Full documentation: [skills/skill-sharpen/SKILL.md](./skills/skill-sharpen/SKILL.md)
 
-```bash
-npx skills add crystian/skills
-```
-
-Install a specific skill:
-
-```bash
-npx skills add crystian/skills --skill skill-sharpen
-```
-
-### As Claude Code plugin
-
-```bash
-claude /plugin install crystian/skills
-```
-
-Skills are namespaced: `/crystools-skills:skill-sharpen`
+---
 
 ## Contributing
 

@@ -4,7 +4,7 @@ author: Crystian
 license: MIT
 description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Three modes: interactive (propose one by one), observe-only (dump to LESSONS.md), review (process pending lessons)."
 metadata:
-  version: 1.1.0
+  version: 1.1.1
   tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review, kaizen
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -110,6 +110,7 @@ gap, or ambiguity. Use these diagnostic categories:
 | **Contradiction** | Two rules directly conflict |
 | **Specificity gap** | No concrete rule exists for this case — the agent had to guess |
 | **Missing instruction** | The SKILL.md simply doesn't cover this scenario |
+| **Redundancy** | Same instruction repeated in different sections or worded differently — causes confusion about which one to follow, wastes context window |
 | **Error inducer** | A specific instruction actively promotes the wrong behavior |
 
 Each proposal must include a short **root cause** line. Format:
