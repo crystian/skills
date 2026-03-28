@@ -32,6 +32,14 @@ claude /plugin install crystian/skills
 
 Skills are namespaced: `/crystools-skills:<skill-name>`
 
+## Update
+
+```bash
+npx skills check                     # check for available updates
+npx skills update                    # update all installed skills
+npx skills add crystian/skills       # reinstall from repo to latest
+```
+
 ---
 
 ## skill-sharpen
