@@ -4,7 +4,7 @@ author: Crystian
 license: MIT
 description: "Sharpen, refine, and optimize AI agent skills through real usage — learn from mistakes, review quality, and improve over time. Observes skill execution in the current conversation, analyzes three sources (conversation history, file diffs, user feedback), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and any SKILL.md-based agent framework. Use after executing any skill: `/skill-sharpen [name]` for a specific skill, or `/skill-sharpen` to auto-detect the last used. Default analyzes and proposes, --review processes accumulated lessons."
 metadata:
-  version: 1.1.7
+  version: 1.1.8
   tags: skill-improvement, auto-improvement, self-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, skill-optimization, review, kaizen
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -25,9 +25,11 @@ Kaizen (改善) for AI agent skills. Observe how a skill performed, find what we
 
 ### 1. Resolve target
 
-- `/skill-sharpen` (no args) — auto-detect last used skill, confirm with user
-- `/skill-sharpen <name>` — search by name across skill directories
-- If no skill was used yet, wait for one to complete
+- `/skill-sharpen` (default) — if a skill was already used in the conversation,
+  auto-detect it and confirm. If not, tell the user: "Run the skill you want to
+  sharpen — I'll observe and analyze after it completes."
+- `/skill-sharpen <name>` — target a specific skill by name
+- `/skill-sharpen --review` — skip to accumulated lessons (no skill execution needed)
 
 Once resolved, read the target's `SKILL.md` and `LESSONS.md` (if exists).
 
