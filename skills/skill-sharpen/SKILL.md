@@ -4,7 +4,7 @@ author: Crystian
 license: MIT
 description: "Sharpens, refines, and optimizes AI agent skills through real usage — learns from mistakes, reviews quality, and improves over time. Observes skill execution in the current conversation, analyzes up to four sources (conversation friction, file diffs, user feedback, static diagnostic), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and compatible SKILL.md-based agent frameworks. Use after executing any skill: `/skill-sharpen [name]` or `/skill-sharpen` to auto-detect. `--review` processes accumulated lessons."
 metadata:
-  version: 1.2.1
+  version: 2.0.0
   tags: skill-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, review, kaizen, efficiency, optimization, improvements
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
@@ -25,32 +25,31 @@ Diagnoses root causes and proposes improvements — you decide each one. Tracks 
 - `/skill-sharpen` (default) — enter listening mode. Output ONLY this single line:
   "skill-sharpen is observing the conversation, waiting for a skill to complete..."
   Nothing else — no explanations, no additional context, no prompts. Be silent.
-  Then wait — do not prompt or block. The agent will automatically proceed to
-  the Gather phase once a skill finishes executing in the conversation.
+  Then wait — do not prompt or block. The user will manually invoke
+  `/skill-sharpen --review` when ready to analyze.
   This is the ideal scenario — sharpen observes the skill in real time.
-  If a skill was already executed earlier in the conversation, output ONLY:
-  "Detected `<skill-name>`. Analyzing..."
-  Then proceed to the Gather phase. No additional text.
-
-**Auto-resume**: When skill-sharpen is waiting and a skill completes
-execution in the conversation (detected by the skill's final output or
-the agent returning to normal flow), automatically resume: set that
-skill as the target and proceed to the Gather phase. Do not ask for
-confirmation — the user already invoked skill-sharpen with the intent
-to analyze the next skill that runs.
 
 - `/skill-sharpen <name>` — target a specific skill by name
+- `/skill-sharpen --diagnose` or `/skill-sharpen <name> --diagnose` — run static
+  diagnostic directly on the SKILL.md without prior observation. Skips conversation
+  friction and file diffs — uses static diagnostic + user feedback only.
+  If no target can be resolved, ask the user: "Which skill do you want to diagnose?
+  Provide the name or path."
 - `/skill-sharpen --review` — skip to accumulated lessons (no skill execution needed).
   If no target can be resolved (no name, no prior skill in conversation), ask the
   user: "Which skill do you want to review? Provide the name or path."
-  If no `LESSONS.md` exists, inform the user: "No accumulated lessons found. Run
-  `/skill-sharpen` after a skill execution to start collecting." Then ask the
-  user: "Want me to run a static diagnostic on the SKILL.md instead?"
+  If multiple skills were executed in this conversation, ask the user:
+  "Multiple skills detected — which one do you want to review?"
+  If no `LESSONS.md` exists, inform the user: "No accumulated lessons found —
+  static diagnostic and user feedback will still run. Run `/skill-sharpen`
+  after a skill execution to start collecting lessons."
 - `/skill-sharpen <name> --review` — review accumulated lessons for the named skill.
   Combines target resolution with `--review` mode. If no `LESSONS.md` exists,
   apply the same fallback: inform the user and offer a static diagnostic.
 
 Argument order does not matter — `--review <name>` is equivalent to `<name> --review`.
+`--diagnose` and `--review` are mutually exclusive — if both are provided, inform the
+user: "Cannot use `--diagnose` and `--review` together. Pick one." and stop.
 
 Once resolved, read the target's `SKILL.md` and `LESSONS.md` (if exists).
 
@@ -71,7 +70,7 @@ or an absolute path), treat it as a direct path — read `<name>/SKILL.md` (or
 `<name>` if it already ends in `SKILL.md`). Skip the 4-path search. If the file
 does not exist, report: "File not found at `<path>`. Check the path and try again."
 
-**Extra arguments**: Any arguments beyond `<name>` or `--review`
+**Extra arguments**: Any arguments beyond `<name>`, `--review`, or `--diagnose`
 are ignored. Inform the user: "Extra arguments ignored: [args]."
 
 **Self-sharpening**: The default mode is observation (conversation friction +
@@ -89,9 +88,11 @@ Collect findings from the appropriate source:
 
 **Sources**: conversation friction, file diffs, user feedback, static diagnostic
 
-- **Default** — conversation, diffs, user feedback
+- **Default** — enters listening mode; analysis deferred to `--review`
 - **`<name>` without prior run** — static diagnostic, user feedback
-- **`--review`** — existing LESSONS.md entries + static diagnostic + user feedback (deferred to Propose)
+- **`<name>` with prior run** — conversation, diffs, static diagnostic, user feedback
+- **`--diagnose`** — static diagnostic, user feedback
+- **`--review`** — conversation, diffs, existing LESSONS.md entries, static diagnostic, user feedback
 
 **Conversation friction**:
 
@@ -116,14 +117,15 @@ SKILL.md's expected output. Look for:
 After gathering findings, ask the user:
 "Want to add anything, or should we review the findings?"
 
-**Static diagnostic** (used in `--review` and `<name>` without prior run):
+**Static diagnostic** (used in `--review`, `--diagnose`, and `<name>` without prior run):
 Validate against baseline rules:
 
 - Frontmatter must have `name` and `description` (required)
 - Description max 1024 characters, third person, with specific trigger phrases
-- Body should be under 500 lines — use `references/` for overflow
+- Body should be under 500 lines and under 5k tokens — use `references/` for overflow.
+  Token count is the primary constraint; line count is a quick heuristic.
 - Name: lowercase, hyphens only, 1-64 characters
-- Progressive disclosure: metadata (~100 tokens) → body (<5k tokens) → resources (as needed)
+- Progressive disclosure: metadata (~100 tokens) → body → resources (as needed)
 - Check for: dead content (unreferenced sections, commented-out blocks, instructions
   that no longer match the skill's actual behavior), scope creep (sections that belong
   in a different skill or exceed the stated purpose), trigger quality (description
@@ -141,32 +143,8 @@ Validate against baseline rules:
   `description`), report it as a `high` finding and propose adding the
   missing structure — infer values from the body content.
 
-Cross-reference against the SKILL.md. Look for:
-
-| Category                   | What to look for                                                  |
-| -------------------------- | ----------------------------------------------------------------- |
-| **Missing instructions**   | Steps the skill should have taken but the SKILL.md didn't mention |
-| **Ambiguous instructions** | Places where the SKILL.md was vague and the skill chose wrong     |
-| **Wrong defaults**         | Default behaviors that consistently need overriding               |
-| **Missing guardrails**     | Errors that a "don't" rule would have prevented                   |
-| **Outdated content**       | References to APIs, tools, or patterns that have changed          |
-| **Missing examples**       | Cases where an example would have prevented misinterpretation     |
-| **Structural issues**      | Ordering problems, missing sections, or buried important info     |
-
-For each finding, diagnose the **root cause** — trace it back to a specific instruction,
-gap, or ambiguity:
-
-| Diagnostic              | What it means                                                                                        |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Coherence**           | Sections don't align — process says one thing, guardrails another                                    |
-| **Coupling**            | Content that doesn't belong — out-of-scope, mixed responsibilities                                   |
-| **Ambiguity**           | Instruction open to interpretation without concrete criteria                                         |
-| **Contradiction**       | Two rules directly conflict                                                                          |
-| **Specificity gap**     | No rule for this case — the agent had to guess                                                       |
-| **Missing instruction** | The SKILL.md doesn't cover this scenario                                                             |
-| **Redundancy**          | Same instruction repeated differently — confusion + wasted tokens                                    |
-| **Error inducer**       | A specific instruction promotes the wrong behavior                                                   |
-| **Inference trap**      | Text is clear but invites a wrong conclusion — the agent infers something not stated or not intended |
+Cross-reference against the SKILL.md. Read `references/diagnostic-tables.md`
+for the category and root-cause lookup tables.
 
 **Static diagnostic output**: Present results as a single unified checklist before proposals:
 
@@ -202,7 +180,7 @@ Present findings one at a time, ordered by importance.
 For `--review` findings from LESSONS.md, verify the root cause still exists
 in the current SKILL.md before proposing. If resolved, mark as
 `(resolved)` and recommend rejecting to clean up the entry.
-If there are more than 7 findings, present the top 7 (by importance) and
+If there are more than 15 findings, present the top 15 (by importance) and
 offer to log the rest to LESSONS.md: "There are [N] more remaining
 findings — want me to log them to LESSONS.md for later review?"
 If the user declines, discard the remaining findings.
@@ -239,46 +217,15 @@ If the user declines, discard the remaining findings.
   any footer like `---`) using the format:
   `- **Never [action].** [reason from the finding]`
 - **Skip all** → write current and all remaining to LESSONS.md, end
+- If the user responds with an unrecognized input, re-prompt with the
+  action set for the current mode (default or --review).
 
 Summary: `Done. [N] accepted, [N] postponed, [N] rejected, [N] don'ts.`
 
 ## LESSONS.md Format
 
-Lives alongside the target's SKILL.md:
-
-```markdown
-# Lessons — {skill-name}
-
-### 1 — high | Hits: 1
-
-- **Date**: 2026-03-28
-- **Source**: conversation
-- **Finding**: line 45 says "if needed" — agent chose wrong path
-- **Diagnostic**: ambiguity — line 45 says "if needed" without criteria
-- **Proposal**: Replace with explicit condition: "when scope is api or both"
-
-### 2 — medium | Hits: 3
-
-- **Date**: 2026-03-27
-- **Source**: diff
-- **Finding**: validation skipped before Phase 3, causing downstream error
-- **Diagnostic**: missing instruction
-- **Proposal**: Add validation step before Phase 3
-```
-
-**Rules**:
-
-- Create the file when the first entry is added (postpone or skip all)
-- No empty files
-- New entries start with `Hits: 1`
-- Same pattern (same diagnostic + same root cause location) → increment Hits
-  (do not duplicate). Different symptoms from the same root cause count as one entry.
-- When incrementing Hits, update the Date to the current date
-- Hits >= 3 → escalate importance (`low` → `medium`, `medium` → `high`)
-- Accept or reject → remove the entry from LESSONS.md
-- Renumber remaining entries sequentially after any removal
-- All entries removed → delete the file
-- Warn the user when entries exceed 20 and suggest `--review`
+Lives alongside the target's SKILL.md.
+Read `references/lessons-format.md` for the full format and rules.
 
 ## Guardrails
 

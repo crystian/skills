@@ -1,7 +1,7 @@
 {
   "name": "crystools-skills",
   "description": "Open collection of AI agent skills — reusable, framework-agnostic SKILL.md packages",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "author": {
     "name": "Crystian",
     "url": "https://www.linkedin.com/in/crystian"
