@@ -1,8 +1,12 @@
+![skill-sharpen.jpg](../../assets/skill-sharpen.jpg)
+
 # skill-sharpen
 
 > Born from real-world production usage across multiple projects. Every diagnostic category, every proposal flow, and every guardrail exists because it solved a real problem in a real skill.
 
-Kaizen (改善) for AI agent skills — observe how a skill performed, find what went wrong, and propose concrete changes to its SKILL.md.
+Kaizen (改善) for AI agent skills. Observe how a skill performed, find what went wrong or could be better, and propose concrete changes to its SKILL.md.
+
+Diagnoses root causes and proposes improvements — you decide each one. Tracks recurrence in LESSONS.md with automatic importance escalation.
 
 ## Install
 
