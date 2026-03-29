@@ -50,6 +50,27 @@ Proposed change: Add validation rule to SKILL.md section...
 
 > Remember you can also be invoked using natural language, e.g. "sharpen the last skill I used" or "review pending lessons".
 
+## LESSONS.md
+
+Findings that you **postpone** or **skip** are saved to a `LESSONS.md` file alongside the analyzed skill's `SKILL.md`. This file acts as a persistent backlog of improvement opportunities:
+
+- Tracks recurrence automatically — repeated patterns increment a `Hits` counter instead of duplicating entries.
+- Escalates importance when `Hits >= 3` (`low` → `medium` → `high`).
+- Accepted or rejected findings are removed; the file is deleted when empty.
+- Use `--review` to revisit accumulated lessons and decide what to apply.
+
+Example entry:
+
+```markdown
+### 1 — high | Hits: 1
+
+- **Date**: 2026-03-28
+- **Source**: conversation
+- **Finding**: line 45 says "if needed" — agent chose wrong path
+- **Diagnostic**: ambiguity — line 45 says "if needed" without criteria
+- **Proposal**: Replace with explicit condition: "when scope is api or both"
+```
+
 ## Diagnostics
 
 Every finding is traced back to a root cause in the SKILL.md. These are the diagnostic categories used to classify what went wrong:

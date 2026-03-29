@@ -11,7 +11,7 @@ Open collection of AI agent skills — reusable, framework-agnostic SKILL.md pac
 ## Install
 
 ```bash
-npx skills add crystian/skills                          # all skills (skills.sh)
+npx skills add crystian/skills                          # all skills
 npx skills add crystian/skills --skill skill-sharpen    # specific skill
 claude /plugin install crystian/skills                  # Claude Code plugin
 ```
@@ -26,11 +26,11 @@ npx skills update                    # update all
 npx skills add crystian/skills       # reinstall latest
 ```
 
----
-
 ## Contributing
 
 After cloning: `./setup.sh` — configures git hooks for version bump on each commit.
+
+See [HUMAN.md](./HUMAN.md) for humans only.
 
 ## License
 
