@@ -74,6 +74,7 @@ Proposed change: Add validation rule to SKILL.md section...
 | Redundancy | Same instruction repeated or worded differently |
 | Missing instruction | The SKILL.md doesn't cover this scenario |
 | Error inducer | A specific instruction promotes the wrong behavior |
+| Inference trap | Text invites a wrong conclusion the agent wasn't meant to draw |
 
 Full documentation: [skills/skill-sharpen/SKILL.md](./skills/skill-sharpen/SKILL.md)
 
