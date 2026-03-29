@@ -1,4 +1,4 @@
-![skill-sharpen.jpg](../../assets/skill-sharpen.jpg)
+<p align="center"><img src="(../../assets/skill-sharpen.jpg" width="800" /></p>
 
 # skill-sharpen
 
