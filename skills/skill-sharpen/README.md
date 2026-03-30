@@ -1,4 +1,4 @@
-<div align="center"><img src="(../../assets/skill-sharpen.jpg" width="800" /></div>
+<div align="center"><img src="../../assets/skill-sharpen.jpg" width="800" /></div>
 
 # skill-sharpen
 
