@@ -144,7 +144,8 @@ Validate against baseline rules:
   missing structure — infer values from the body content.
 
 Cross-reference against the SKILL.md. Read `references/diagnostic-tables.md`
-for the category and root-cause lookup tables.
+(relative to this skill's own directory, NOT the project CWD) for the category
+and root-cause lookup tables.
 
 **Static diagnostic output**: Present results as a single unified checklist before proposals:
 
@@ -225,7 +226,8 @@ Summary: `Done. [N] accepted, [N] postponed, [N] rejected, [N] don'ts.`
 ## LESSONS.md Format
 
 Lives alongside the target's SKILL.md.
-Read `references/lessons-format.md` for the full format and rules.
+Read `references/lessons-format.md` (relative to this skill's own directory,
+NOT the project CWD) for the full format and rules.
 
 ## Guardrails
 
