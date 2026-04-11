@@ -4,7 +4,7 @@ author: Crystian
 license: MIT
 description: "Optimizer that refines and professionalizes AI agent skills through real usage — saves tokens, eliminates redundancy, and tightens instructions so skills cost less to run. Learns from mistakes, reviews quality, and improves over time. Observes skill execution in the current conversation, analyzes up to four sources (conversation friction, file diffs, user feedback, static diagnostic) plus accumulated lessons, and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and compatible SKILL.md-based agent frameworks. Use after executing any skill: `/skill-optimizer [name]` or `/skill-optimizer` to auto-detect. `--review` processes accumulated lessons."
 metadata:
-  version: 1.4.10
+  version: 2.0.0
   tags: skill-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, review, kaizen, efficiency, optimization, improvements
   github: https://github.com/crystian/skills
   linkedin: https://www.linkedin.com/in/crystian
