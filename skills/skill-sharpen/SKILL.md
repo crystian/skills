@@ -2,7 +2,7 @@
 name: skill-sharpen
 author: Crystian
 license: MIT
-description: "Sharpens, refines, and optimizes AI agent skills through real usage — learns from mistakes, reviews quality, and improves over time. Observes skill execution in the current conversation, analyzes up to four sources (conversation friction, file diffs, user feedback, static diagnostic), and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and compatible SKILL.md-based agent frameworks. Use after executing any skill: `/skill-sharpen [name]` or `/skill-sharpen` to auto-detect. `--review` processes accumulated lessons."
+description: "Sharpens, refines, and optimizes AI agent skills through real usage — learns from mistakes, reviews quality, and improves over time. Observes skill execution in the current conversation, analyzes up to four sources (conversation friction, file diffs, user feedback, static diagnostic) plus accumulated lessons, and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and compatible SKILL.md-based agent frameworks. Use after executing any skill: `/skill-sharpen [name]` or `/skill-sharpen` to auto-detect. `--review` processes accumulated lessons."
 metadata:
   version: 1.4.8
   tags: skill-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, review, kaizen, efficiency, optimization, improvements
@@ -202,9 +202,24 @@ If the user declines, discard the remaining findings.
   For additions, show only `+` lines with surrounding context.
   For removals, show only `-` lines.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (a)ccept  (p)ostpone  (r)eject  (d)on't  (s)kip all
-  In --review mode: (a)ccept  (k)eep  (r)eject  (d)on't  (s)kip all
 ```
+
+Use the question tool (e.g., `AskUserQuestion` in Claude Code) to ask the user for their decision:
+
+**Default mode:**
+- question: "Proposal [N/total] — [importance]: [one-line finding summary]"
+- header: "Proposal [N/total]"
+- options:
+  - label: "Accept", description: "Apply the edit to the SKILL.md"
+  - label: "Postpone", description: "Save to LESSONS.md for later"
+  - label: "Reject", description: "Discard this finding"
+  - label: "Don't", description: "Add a permanent negative rule to SKILL.md"
+
+**`--review` mode:**
+- Same as above but replace "Postpone" with:
+  - label: "Keep", description: "Leave in LESSONS.md for later review"
+
+**Actions:**
 
 - **Accept** → apply the edit
 - **Postpone** → save to LESSONS.md
@@ -217,9 +232,9 @@ If the user declines, discard the remaining findings.
   section (create one if absent — place it as the last section before
   any footer like `---`) using the format:
   `- **Never [action].** [reason from the finding]`
-- **Skip all** → write current and all remaining to LESSONS.md, end
-- If the user responds with an unrecognized input, re-prompt with the
-  action set for the current mode (default or --review).
+
+If the user selects "Other" and types "skip all", write current and all
+remaining findings to LESSONS.md and end.
 
 Summary: `Done. [N] accepted, [N] postponed, [N] rejected, [N] don'ts.`
 
