@@ -1,6 +1,6 @@
-<div align="center"><img src="../../assets/skill-sharpen.jpg" width="800" /></div>
+<div align="center"><img src="../../assets/skill-optimizer.jpg" width="900" style="max-width: 100%; height: auto;" /></div>
 
-# skill-sharpen
+# skill-optimizer
 
 > Born from real-world production usage across multiple projects. Every diagnostic category, every proposal flow, and every guardrail exists because it solved a real problem in a real skill.
 
@@ -11,7 +11,7 @@ Diagnoses root causes and proposes improvements — you decide each one. Tracks 
 ## Install
 
 ```bash
-npx skills add crystian/skills --skill skill-sharpen
+npx skills add crystian/skills --skill skill-optimizer
 ```
 
 ## Main features
@@ -23,19 +23,19 @@ npx skills add crystian/skills --skill skill-sharpen
 
 1. **Observe then review** — watch a skill run, then analyze what happened.
    ```
-   /skill-sharpen
+   /skill-optimizer
    ```
    _Auto-detect last used skill or start observing the session to use the conversation as input_
 
    **Do something with the skill to observe** its performance. Then, run:
    ```
-   /skill-sharpen --review
+   /skill-optimizer --review
    ```
 
 2. **Direct diagnosis** — analyze a SKILL.md without prior execution.
    ```
-   /skill-sharpen --diagnose
-   /skill-sharpen my-beautiful-skill --diagnose
+   /skill-optimizer --diagnose
+   /skill-optimizer my-beautiful-skill --diagnose
    ```
    _Finds structural issues, ambiguities, and gaps without needing observation_
 
@@ -52,7 +52,7 @@ Proposed change: Add validation rule to SKILL.md section...
 (a)ccept  (p)ostpone  (r)eject  (d)on't  (s)kip all
 ```
 
-> Remember you can also be invoked using natural language, e.g. "sharpen the last skill I used" or "review pending lessons".
+> Remember you can also be invoked using natural language, e.g. "optimize the last skill I used" or "review pending lessons".
 
 ## LESSONS.md
 

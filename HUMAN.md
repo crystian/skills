@@ -23,14 +23,14 @@ No shared runtime, no global state, no orchestrator. A skill is a directory with
 
 ### The human decides
 
-Skills propose, they don't impose. skill-sharpen shows diffs and waits for confirmation. It never edits without approval. This isn't a technical limitation — it's a design decision. The user owns their skills.
+Skills propose, they don't impose. skill-optimizer shows diffs and waits for confirmation. It never edits without approval. This isn't a technical limitation — it's a design decision. The user owns their skills.
 
 ## Technical decisions
 
 ## Mental roadmap (not a commitment)
 
 - More skills: the project's value scales with the quantity and quality of available skills
-- Improve skill-sharpen: it's the most complex and most used skill, there's always room to refine it
+- Improve skill-optimizer: it's the most complex and most used skill, there's always room to refine it
 - Explore skill composition: let a skill invoke or reference others in a structured way
 - Community contributions: make it easy for others to publish compatible skills
 

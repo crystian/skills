@@ -1,8 +1,8 @@
 ---
-name: skill-sharpen
+name: skill-optimizer
 author: Crystian
 license: MIT
-description: "Sharpens, refines, and optimizes AI agent skills through real usage — learns from mistakes, reviews quality, and improves over time. Observes skill execution in the current conversation, analyzes up to four sources (conversation friction, file diffs, user feedback, static diagnostic) plus accumulated lessons, and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and compatible SKILL.md-based agent frameworks. Use after executing any skill: `/skill-sharpen [name]` or `/skill-sharpen` to auto-detect. `--review` processes accumulated lessons."
+description: "Optimizer that refines and professionalizes AI agent skills through real usage — saves tokens, eliminates redundancy, and tightens instructions so skills cost less to run. Learns from mistakes, reviews quality, and improves over time. Observes skill execution in the current conversation, analyzes up to four sources (conversation friction, file diffs, user feedback, static diagnostic) plus accumulated lessons, and proposes concrete improvements to the target skill's SKILL.md. Works with Claude Code and compatible SKILL.md-based agent frameworks. Use after executing any skill: `/skill-optimizer [name]` or `/skill-optimizer` to auto-detect. `--review` processes accumulated lessons."
 metadata:
   version: 1.4.8
   tags: skill-improvement, feedback-loop, retrospective, code-quality, agent-tools, meta-skill, continuous-learning, review, kaizen, efficiency, optimization, improvements
@@ -10,7 +10,7 @@ metadata:
   linkedin: https://www.linkedin.com/in/crystian
 ---
 
-# Skill Sharpen
+# Skill Optimizer
 
 > Born from real-world production usage across multiple projects. Every diagnostic category, every proposal flow, and every guardrail exists because it solved a real problem in a real skill.
 
@@ -22,28 +22,28 @@ Diagnoses root causes and proposes improvements — you decide each one. Tracks 
 
 ### 1. Resolve target
 
-- `/skill-sharpen` (default) — enter listening mode. Output ONLY this single line:
-  "skill-sharpen is observing the conversation, waiting for a skill to complete..."
+- `/skill-optimizer` (default) — enter listening mode. Output ONLY this single line:
+  "skill-optimizer is observing the conversation, waiting for a skill to complete..."
   Nothing else — no explanations, no additional context, no prompts. Be silent.
   Then wait — do not prompt or block. The user will manually invoke
-  `/skill-sharpen --review` when ready to analyze.
-  This is the ideal scenario — sharpen observes the skill in real time.
+  `/skill-optimizer --review` when ready to analyze.
+  This is the ideal scenario — the optimizer observes the skill in real time.
 
-- `/skill-sharpen <name>` — target a specific skill by name
-- `/skill-sharpen --diagnose` or `/skill-sharpen <name> --diagnose` — run static
+- `/skill-optimizer <name>` — target a specific skill by name
+- `/skill-optimizer --diagnose` or `/skill-optimizer <name> --diagnose` — run static
   diagnostic directly on the SKILL.md without prior observation. Skips conversation
   friction and file diffs — uses static diagnostic + user feedback only.
   If no target can be resolved, ask the user: "Which skill do you want to diagnose?
   Provide the name or path."
-- `/skill-sharpen --review` — skip to accumulated lessons (no skill execution needed).
+- `/skill-optimizer --review` — skip to accumulated lessons (no skill execution needed).
   If no target can be resolved (no name, no prior skill in conversation), ask the
   user: "Which skill do you want to review? Provide the name or path."
   If multiple skills were executed in this conversation, ask the user:
   "Multiple skills detected — which one do you want to review?"
   If no `LESSONS.md` exists, inform the user: "No accumulated lessons found —
-  static diagnostic and user feedback will still run. Run `/skill-sharpen`
+  static diagnostic and user feedback will still run. Run `/skill-optimizer`
   after a skill execution to start collecting lessons."
-- `/skill-sharpen <name> --review` — review accumulated lessons for the named skill.
+- `/skill-optimizer <name> --review` — review accumulated lessons for the named skill.
   Combines target resolution with `--review` mode. If no `LESSONS.md` exists,
   apply the same fallback: inform the user and offer a static diagnostic.
 
@@ -57,7 +57,7 @@ Once resolved, read the target's `SKILL.md` and `LESSONS.md` (if exists).
 
 1. `.claude/skills/`
 2. `.agents/skills/`
-3. The parent directory of the skill that invoked sharpen (peer skills are
+3. The parent directory of the skill that invoked the optimizer (peer skills are
    expected as sibling folders — e.g., `../other-skill/SKILL.md`)
 4. Current working directory
 
@@ -73,13 +73,13 @@ does not exist, report: "File not found at `<path>`. Check the path and try agai
 **Extra arguments**: Any arguments beyond `<name>`, `--review`, or `--diagnose`
 are ignored. Inform the user: "Extra arguments ignored: [args]."
 
-**Self-sharpening**: The default mode is observation (conversation friction +
-file diffs), but when the target is `skill-sharpen` itself, self-observation is
+**Self-optimization**: The default mode is observation (conversation friction +
+file diffs), but when the target is `skill-optimizer` itself, self-observation is
 unreliable — skip conversation friction and file diffs, fall back to static
 diagnostic + user feedback instead.
 
 **Fallback without prior run**: If the target skill was not executed in this
-conversation (e.g., `/skill-sharpen <name>` without prior run), fall back to
+conversation (e.g., `/skill-optimizer <name>` without prior run), fall back to
 static diagnostic + user feedback. State this to the user before proceeding.
 
 ### 2. Gather

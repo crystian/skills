@@ -6,13 +6,13 @@ Open collection of AI agent skills — reusable, framework-agnostic SKILL.md pac
 
 | Skill | Description | Docs |
 |-------|-------------|------|
-| [skill-sharpen](./skills/skill-sharpen/) | Kaizen for AI agent skills — observes execution, analyzes friction points, and proposes concrete improvements to SKILL.md files | [README](./skills/skill-sharpen/README.md) |
+| [skill-optimizer](./skills/skill-optimizer/) | Kaizen for AI agent skills — observes execution, analyzes friction points, and proposes concrete improvements to SKILL.md files | [README](./skills/skill-optimizer/README.md) |
 
 ## Install
 
 ```bash
 npx skills add crystian/skills                          # all skills
-npx skills add crystian/skills --skill skill-sharpen    # specific skill
+npx skills add crystian/skills --skill skill-optimizer    # specific skill
 claude /plugin install crystian/skills                  # Claude Code plugin
 ```
 
