@@ -132,7 +132,9 @@ Validate against baseline rules:
   contains specific verbs and contexts that help the harness match user intent — not
   just generic terms), token efficiency (redundant paragraphs, verbose phrasing that
   could be tightened without losing meaning), completeness (all stated flows have
-  matching instructions — no "TODO" or undocumented branches)
+  matching instructions — no "TODO" or undocumented branches), task trackability
+  (skill defines sequential steps or phases but does not instruct the agent to
+  track progress via harness task tools)
 - When recommending `references/`: this is a subdirectory alongside SKILL.md
   that holds supporting material (tables, examples, templates) the agent loads
   on demand. Files should be markdown, named descriptively (e.g.,
@@ -142,6 +144,22 @@ Validate against baseline rules:
 - If the target SKILL.md is missing frontmatter or required fields (`name`,
   `description`), report it as a `high` finding and propose adding the
   missing structure — infer values from the body content.
+- **Task discovery**: Scan the skill's execution flow for numbered steps, phases,
+  or sequential tasks (e.g., `### 1.`, `Step N:`, `Phase N`, ordered markdown
+  lists within execution sections). If found, enumerate them in the diagnostic
+  output:
+  ```
+  Tasks detected (N):
+    1. [step title or summary]
+    2. [step title or summary]
+    ...
+  ```
+  Then check: does the skill instruct the agent to report progress per step?
+  If not, and the harness provides task management tools (e.g., `TaskCreate`/
+  `TaskUpdate` in Claude Code), propose adding an instruction like:
+  "Create a task per step at the start of execution and update each task's
+  status as it completes, so the user can track progress."
+  Importance: `medium`. Diagnostic: `missing instruction`.
 
 Cross-reference against the SKILL.md. Read `references/diagnostic-tables.md`
 (relative to this skill's own directory, NOT the project CWD) for the category

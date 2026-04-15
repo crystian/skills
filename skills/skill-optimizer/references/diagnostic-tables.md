@@ -11,6 +11,7 @@
 | **Outdated content**       | References to APIs, tools, or patterns that have changed          |
 | **Missing examples**       | Cases where an example would have prevented misinterpretation     |
 | **Structural issues**      | Ordering problems, missing sections, or buried important info     |
+| **Missing task tracking**  | Skill has enumerable steps but no instruction to track progress via harness task tools |
 
 ## Root-cause diagnostics
 
