@@ -28,6 +28,7 @@ Skills follow a three-layer progressive disclosure model: lightweight frontmatte
 | Skill | Description | Docs |
 |-------|-------------|------|
 | [skill-optimizer](./skills/skill-optimizer/) | Kaizen for AI agent skills — observes execution, diagnoses friction, proposes concrete SKILL.md improvements | [README](./skills/skill-optimizer/README.md) |
+| [skill-map](https://github.com/crystian/skill-map) | Map, inspect and manage collections of interconnected Markdown skills, agents and docs — graph explorer + CLI + optional LLM layer. Lives in its own repo. | [README](https://github.com/crystian/skill-map#readme) |
 
 More coming. Want to add one? Jump to [Contributing](#contributing).
 
@@ -103,6 +104,10 @@ CLAUDE.md                 # instructions for Claude / agents
 - [CHANGELOG.md](./CHANGELOG.md) — release history.
 - [HUMAN.md](./HUMAN.md) — design principles and project vision (for humans).
 - [LICENSE](./LICENSE) — MIT.
+
+## Related projects
+
+- [skill-map](https://github.com/crystian/skill-map) — companion tool that maps, inspects and manages collections of Markdown-based skills, agents, commands and docs. Graph explorer + CLI + optional LLM layer. Works on any ecosystem of interconnected MDs (not limited to this repo).
 
 ## License
 
