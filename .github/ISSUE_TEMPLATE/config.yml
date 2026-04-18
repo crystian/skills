@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussions
+    url: https://github.com/crystian/skills/discussions
+    about: For usage questions, ideas, or open-ended conversations.
+  - name: Security vulnerability
+    url: https://github.com/crystian/skills/security/advisories/new
+    about: Report privately via Security Advisories. Do not open a public issue.

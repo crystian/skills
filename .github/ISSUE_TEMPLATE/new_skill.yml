@@ -1,0 +1,60 @@
+name: New skill proposal
+description: Propose a brand-new skill before opening a PR.
+title: "[skill] "
+labels: ["new-skill", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Proposing a new skill? Open this first to align on scope before writing the PR.
+        The skill itself should follow [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) and start from `skills/_template/`.
+  - type: input
+    id: name
+    attributes:
+      label: Proposed name
+      description: Lowercase, hyphenated, 1–64 chars.
+      placeholder: my-new-skill
+    validations:
+      required: true
+  - type: textarea
+    id: purpose
+    attributes:
+      label: What does it do?
+      description: One paragraph explaining the task it automates or guides.
+    validations:
+      required: true
+  - type: textarea
+    id: triggers
+    attributes:
+      label: Trigger phrases
+      description: Concrete phrases that should activate this skill.
+      placeholder: |
+        - "Review my PR description"
+        - "Check the TypeScript errors in the build output"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope boundaries
+      description: What this skill explicitly does NOT do. Helps avoid overlap with other skills.
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: Planned references
+      description: What supporting material (if any) will live in `references/`?
+    validations:
+      required: false
+  - type: checkboxes
+    id: acks
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: I read `CONTRIBUTING.md` and `skills/_template/SKILL.md`.
+          required: true
+        - label: This skill will be independent (no shared runtime).
+          required: true
+        - label: I will author it under the MIT license.
+          required: true

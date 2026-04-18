@@ -46,6 +46,8 @@ jobs:
         run: |
           shopt -s nullglob
           for SKILL in skills/*/SKILL.md; do
+            # Skip private/template skills (directories starting with _).
+            case "$SKILL" in skills/_*) continue ;; esac
             sed -i "s/version: $CURRENT/version: $VERSION/" "$SKILL"
           done
 

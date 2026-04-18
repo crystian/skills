@@ -1,0 +1,69 @@
+name: Bug report
+description: Report a problem with a skill or the plugin tooling.
+title: "[bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Please fill in as much detail as you can.
+  - type: input
+    id: skill
+    attributes:
+      label: Skill affected
+      description: Which skill? (e.g. `skill-optimizer`). If it's not skill-specific, write "plugin".
+      placeholder: skill-optimizer
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Plugin / skill version
+      description: See `.claude-plugin/plugin.json` or the skill's `metadata.version`.
+      placeholder: 1.4.11
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: Describe the intended behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps that reproduce the issue.
+      placeholder: |
+        1. Invoke `/crystools-skills:skill-optimizer`
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Claude Code version, any relevant tooling.
+      placeholder: |
+        - OS: macOS 14.5
+        - Claude Code: 1.x.x
+        - Shell: zsh
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / transcript excerpt
+      description: Paste any relevant output. Redact sensitive info.
+      render: shell
+    validations:
+      required: false
