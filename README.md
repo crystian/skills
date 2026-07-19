@@ -1,6 +1,6 @@
 # crystools-skills
 
-> Open collection of AI agent skills — reusable, framework-agnostic SKILL.md packages for Claude Code and compatible agents.
+> Open collection of AI agent skills - reusable, framework-agnostic SKILL.md packages for Claude Code and compatible agents.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Plugin version](https://img.shields.io/github/v/tag/crystian/skills?label=version)](./.claude-plugin/plugin.json)
@@ -19,7 +19,7 @@
 
 ## What's a skill?
 
-A **skill** is a self-contained directory with a `SKILL.md` file. It packages "how to do X" in a way any SKILL.md-aware agent can execute, with no shared runtime and no global state. Copy it, fork it, move it between projects — it just works.
+A **skill** is a self-contained directory with a `SKILL.md` file. It packages "how to do X" in a way any SKILL.md-aware agent can execute, with no shared runtime and no global state. Copy it, fork it, move it between projects - it just works.
 
 Skills follow a three-layer progressive disclosure model: lightweight frontmatter (for activation), a bounded body (for execution), and optional references (loaded on demand). See [HUMAN.md](./HUMAN.md) for the design philosophy.
 
@@ -27,8 +27,9 @@ Skills follow a three-layer progressive disclosure model: lightweight frontmatte
 
 | Skill | Description | Docs |
 |-------|-------------|------|
-| [skill-optimizer](./skills/skill-optimizer/) | Kaizen for AI agent skills — observes execution, diagnoses friction, proposes concrete SKILL.md improvements | [README](./skills/skill-optimizer/README.md) |
-| [skill-map](https://github.com/crystian/skill-map) | Map, inspect and manage collections of interconnected Markdown skills, agents and docs — graph explorer + CLI + optional LLM layer. Lives in its own repo. | [README](https://github.com/crystian/skill-map#readme) |
+| [skill-optimizer](./skills/skill-optimizer/) | Kaizen for AI agent skills - observes execution, diagnoses friction, proposes concrete SKILL.md improvements | [README](./skills/skill-optimizer/README.md) |
+| [xquik-x-research](./skills/xquik-x-research/) | Research X conversations with Xquik exports, REST API responses, or MCP output | [README](./skills/xquik-x-research/README.md) |
+| [skill-map](https://github.com/crystian/skill-map) | Map, inspect and manage collections of interconnected Markdown skills, agents and docs - graph explorer + CLI + optional LLM layer. Lives in its own repo. | [README](https://github.com/crystian/skill-map#readme) |
 
 More coming. Want to add one? Jump to [Contributing](#contributing).
 
@@ -57,7 +58,7 @@ npx skills add crystian/skills       # reinstall latest
 
 ## Contributing
 
-Contributions are welcome — new skills, improvements, bug fixes, docs. Start here:
+Contributions are welcome - new skills, improvements, bug fixes, docs. Start here:
 
 1. Read [CONTRIBUTING.md](./CONTRIBUTING.md).
 2. For a new skill, open a [New skill proposal](https://github.com/crystian/skills/issues/new?template=new_skill.yml) first to align on scope.
@@ -88,6 +89,10 @@ skills/
     SKILL.md              # skill definition (frontmatter + body)
     README.md             # user-facing docs
     references/           # optional, loaded on demand
+  xquik-x-research/
+    SKILL.md
+    README.md
+    references/
 CONTRIBUTING.md           # how to contribute
 CODE_OF_CONDUCT.md        # community standards
 SECURITY.md               # how to report vulnerabilities
@@ -98,16 +103,16 @@ CLAUDE.md                 # instructions for Claude / agents
 
 ## Documents
 
-- [CONTRIBUTING.md](./CONTRIBUTING.md) — how to contribute, skill standard, PR workflow.
-- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) — community standards (Contributor Covenant v2.1).
-- [SECURITY.md](./SECURITY.md) — vulnerability reporting policy.
-- [CHANGELOG.md](./CHANGELOG.md) — release history.
-- [HUMAN.md](./HUMAN.md) — design principles and project vision (for humans).
-- [LICENSE](./LICENSE) — MIT.
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - how to contribute, skill standard, PR workflow.
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) - community standards (Contributor Covenant v2.1).
+- [SECURITY.md](./SECURITY.md) - vulnerability reporting policy.
+- [CHANGELOG.md](./CHANGELOG.md) - release history.
+- [HUMAN.md](./HUMAN.md) - design principles and project vision (for humans).
+- [LICENSE](./LICENSE) - MIT.
 
 ## Related projects
 
-- [skill-map](https://github.com/crystian/skill-map) — companion tool that maps, inspects and manages collections of Markdown-based skills, agents, commands and docs. Graph explorer + CLI + optional LLM layer. Works on any ecosystem of interconnected MDs (not limited to this repo).
+- [skill-map](https://github.com/crystian/skill-map) - companion tool that maps, inspects and manages collections of Markdown-based skills, agents, commands and docs. Graph explorer + CLI + optional LLM layer. Works on any ecosystem of interconnected MDs (not limited to this repo).
 
 ## License
 
