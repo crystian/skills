@@ -116,7 +116,7 @@ def validate_skill(skill_dir: str, name: str, errors: list[str]) -> None:
                 f"[{name}] metadata.version '{version}' must be semver (X.Y.Z)"
             )
 
-    body_lines = body.count("\n")
+    body_lines = len(body.splitlines())
     if body_lines > MAX_BODY_LINES:
         errors.append(
             f"[{name}] body is {body_lines} lines, max {MAX_BODY_LINES} "
@@ -134,7 +134,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if not os.path.isdir(args.skills_dir):
-        print(f"No {args.skills_dir}/ directory — nothing to validate.")
+        print(f"No {args.skills_dir}/ directory - nothing to validate.")
         return 0
 
     errors: list[str] = []
